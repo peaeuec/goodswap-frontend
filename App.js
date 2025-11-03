@@ -43,7 +43,7 @@ const firebaseConfig = {
   appId: "1:611695200531:web:eb3d973aa2e3810583b2e6",
   measurementId: "G-HBQGBD4NKT"
 };
-const YOUR_NGROK_URL = 'https://inflectional-ardelia-monochromatically.ngrok-free.dev';
+const YOUR_NGROK_URL = '10.51.159.250';
 // ---------------
 
 // --- Initialize Firebase ---
