@@ -18,7 +18,7 @@ import {
   Appbar,
   TextInput,
   Button,
-  Text, // Use Paper's Text
+  Text,
   Card,
   IconButton,
   Divider
@@ -43,7 +43,7 @@ const firebaseConfig = {
   appId: "1:611695200531:web:eb3d973aa2e3810583b2e6",
   measurementId: "G-HBQGBD4NKT"
 };
-const YOUR_NGROK_URL = '10.51.159.250';
+const YOUR_NGROK_URL = 'https://inflectional-ardelia-monochromatically.ngrok-free.dev';
 // ---------------
 
 // --- Initialize Firebase ---
@@ -84,7 +84,6 @@ function GoodSwapApp() {
   // ------------------------------------
 
   // --- Auth & Data Functions ---
-  // (These are complete and should be correct)
   const handleRegister = async () => {
     if (!email || !password || !nickname) { Alert.alert('Error', 'Please fill in all fields.'); return; }
     try {
@@ -208,7 +207,6 @@ function GoodSwapApp() {
             <Card style={styles.card}>
               <Card.Title title="Trade Proposal" />
               <Card.Content>
-                {/* Ensure all parts are inside Text */}
                 <Text style={styles.tradeInfoText}>
                   <Text style={{fontWeight: 'bold'}}>{item.proposerNickname || 'User'}</Text> offers you: <Text style={{fontWeight: 'bold'}}>{item.itemToGiveName}</Text>
                 </Text>
@@ -225,7 +223,7 @@ function GoodSwapApp() {
         />
       );
     }
-
+    
     // --- Render Items Screen ---
     return (
       <>
@@ -234,7 +232,6 @@ function GoodSwapApp() {
             <TextInput label="Item Name" value={newItemName} onChangeText={setNewItemName} mode="outlined" dense style={styles.input}/>
             <TextInput label="Item Description" value={newItemDescription} onChangeText={setNewItemDescription} mode="outlined" dense style={styles.input}/>
             <Button mode="contained" onPress={handleAddItem} style={styles.button} icon="plus-circle-outline">
-                {/* Text needs to be inside Button's children or use Paper <Text> */}
                  Add My Item
             </Button>
           </Card.Content>
@@ -251,17 +248,20 @@ function GoodSwapApp() {
                      <Text variant="bodySmall" style={[styles.itemStatusChip, item.status === 'available' ? styles.availableChip : styles.lockedChip]}>{item.status}</Text>
                    </View>
                    <Text variant="bodyMedium" style={styles.itemDescription}>{item.description}</Text>
-                   <Text variant="bodySmall" style={styles.itemOwner}>
-                       {/* Icon needs to be outside Text or handled differently if using variant */}
-                       <Icon name="account-outline" size={14}/>
-                       {/* Make sure the space and text are inside Text */}
-                       <Text> Owner: {item.ownerNickname || item.ownerEmail || 'Unknown'}</Text>
-                   </Text>
+                   
+                   {/* --- THIS IS THE CORRECTED PART --- */}
+                   <View style={styles.itemOwnerContainer}>
+                     <Icon name="account-outline" size={14} color={theme.colors.primary} />
+                     <Text variant="bodySmall" style={styles.itemOwnerText}>
+                       Owner: {item.ownerNickname || item.ownerEmail || 'Unknown'}
+                     </Text>
+                   </View>
+                   {/* ---------------------------------- */}
+
                  </Card.Content>
                 {!isMyItem && item.status === 'available' && (
                   <Card.Actions>
                     <Button mode="contained" icon="swap-horizontal" onPress={() => openTradeModal(item)}>
-                        {/* Ensure Button text is handled correctly */}
                         Propose Trade
                     </Button>
                   </Card.Actions>
@@ -285,7 +285,7 @@ function GoodSwapApp() {
         <Appbar.Content title={userProfile ? `${userProfile.nickname}'s GoodSwap` : 'GoodSwap'} titleStyle={styles.title} />
         <Appbar.Action icon="logout" onPress={handleLogout} color="red" />
       </Appbar.Header>
-
+      
       <View style={styles.screenToggleContainer}>
         <TouchableOpacity style={[styles.screenToggleButton, currentScreen === 'items' && styles.screenToggleButtonActive]} onPress={() => setCurrentScreen('items')}>
           <Text style={[styles.screenToggleText, currentScreen === 'items' && styles.screenToggleTextActive]}>All Items</Text>
@@ -294,7 +294,7 @@ function GoodSwapApp() {
           <Text style={[styles.screenToggleText, currentScreen === 'trades' && styles.screenToggleTextActive]}>My Trades</Text>
         </TouchableOpacity>
       </View>
-
+      
       {loading ? (
         <View style={styles.loadingContainer}> <ActivityIndicator size="large" color={theme.colors.primary} /> </View>
       ) : ( renderMainContent() )}
@@ -316,7 +316,6 @@ function GoodSwapApp() {
               ListEmptyComponent={<Text style={styles.loadingText}>You have no available items to trade.</Text>}
               renderItem={({ item }) => (
                 <TouchableOpacity style={styles.modalItem} onPress={() => handleProposeTrade(item)}>
-                  {/* Ensure these are Paper <Text> */}
                   <Text style={styles.itemName}>{item.itemName}</Text>
                   <Text style={styles.itemDescriptionModal}>{item.description}</Text>
                 </TouchableOpacity>
@@ -341,7 +340,7 @@ export default function App() {
 }
 
 // --- Stylesheet ---
-// Added tradeInfoText style
+// (Updated with new styles for the icon fix)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   authContainer: { flex: 1, justifyContent: 'center', padding: 24 },
@@ -353,13 +352,27 @@ const styles = StyleSheet.create({
   list: { flex: 1 },
   card: { marginVertical: 8, marginHorizontal: 16, },
   itemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, },
-  itemStatusChip: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12, fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', alignSelf: 'flex-start' }, // Added alignSelf
+  itemStatusChip: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12, fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', alignSelf: 'flex-start' },
   availableChip: { backgroundColor: '#c8e6c9', color: '#2e7d32', },
   lockedChip: { backgroundColor: '#ffecb3', color: '#ff8f00', },
-  itemName: { fontSize: 18, fontWeight: '600', marginBottom: 4 }, // Added marginBottom
+  itemName: { fontSize: 18, fontWeight: '600', marginBottom: 4 },
   itemDescription: { fontSize: 14, color: '#555', marginTop: 4 },
   itemDescriptionModal: { fontSize: 13, color: '#777', marginTop: 2 },
-  itemOwner: { fontSize: 12, color: theme.colors.primary, marginTop: 8, flexDirection: 'row', alignItems: 'center' }, // Changed display to flexDirection
+  
+  // --- CORRECTED STYLES FOR ICON ---
+  itemOwnerContainer: { 
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  itemOwnerText: {
+    fontSize: 12,
+    color: theme.colors.primary,
+    marginLeft: 4, // Space between icon and text
+  },
+  // ---------------------------------
+
+  itemStatus: { fontSize: 12, color: '#888', marginTop: 4, fontStyle: 'italic' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 50 },
   loadingText: { marginTop: 10, fontSize: 16, color: '#888' },
   modalContainer: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' },
@@ -376,7 +389,7 @@ const styles = StyleSheet.create({
   screenToggleText: { fontSize: 16, fontWeight: '600', color: theme.colors.primary },
   screenToggleTextActive: { color: theme.colors.onPrimaryContainer },
   tradeResponseContainer: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 8, },
-  tradeInfoText: { // NEW style for trade info
+  tradeInfoText: {
     fontSize: 15,
     marginBottom: 5,
   }
